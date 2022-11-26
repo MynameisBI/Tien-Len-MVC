@@ -8,6 +8,12 @@ function Controller:init(model, view)
 end
 
 
+function Controller:onCardSelected(cardIndex)
+  local card = self.model:getHumanCards()[cardIndex]
+  card.selected = not card.selected
+end
+
+
 function Controller:humanSkipped()
 
 end

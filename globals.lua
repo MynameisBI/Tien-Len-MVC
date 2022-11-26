@@ -33,3 +33,9 @@ Suit = {
   DIAMONDS = 3,
   HEARTS = 4,
 }
+
+AIID = {
+  UPPER = 1,
+  LEFT = 2,
+  RIGHT = 3,
+}

@@ -7,8 +7,10 @@ Controller = require 'src.controller'
 
 function love.load()
   Model:init()
-  View:init(Model)
+  View:init(Model, Controller)
   Controller:init(Model, View)
+
+  Model:startGame()
 end
 
 

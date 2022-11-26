@@ -13,15 +13,11 @@ local rightX, rightY = 675, love.graphics.getHeight()/2 - cardHeight/2
 local lowerX, lowerY =  love.graphics.getWidth()/2 - 125, 460
 
 
-function View:init(model)
+function View:init(model, controller)
   self.model = model
+  self.controller = controller
   
   self.suit = Suit.new()
-
-  self.upperCardsNum = 13
-  self.leftCardsNum = 13
-  self.rightCardsNum = 13
-  self.lowerCards = {}
 end
 
 
@@ -37,10 +33,14 @@ function View:update(dt)
   end
 
   -- Lower cards
-  for i = 1, self.upperCardsNum do
-    local x = lowerX + (-self.upperCardsNum/2 + i) * cardWidth + (-(self.upperCardsNum+1)/2 + i) * cardWidth * cardSpaceRatio
-    if self.suit:Button(tostring(i), x, lowerY, cardWidth, cardHeight).hit then
+  local humanCards = self.model:getHumanCards()
+  for i = 1, #humanCards do
+    local x = lowerX + (-#humanCards/2 + i) * cardWidth + (-(#humanCards+1)/2 + i) * cardWidth * cardSpaceRatio
+    local y = humanCards[i].selected and lowerY - 25 or lowerY
 
+    if self.suit:Button(string.format('%d-%d', humanCards[i].suit, humanCards[i].rank),
+        x, y, cardWidth, cardHeight).hit then
+      self.controller:onCardSelected(i)
     end
   end
 end
@@ -52,15 +52,15 @@ function View:draw()
   -- Upper cards
   -- love.graphics.setColor(1, 1, 1)
   love.graphics.rectangle('line', upperX, upperY, cardWidth, cardHeight)
-  love.graphics.print(tostring(self.upperCardsNum), upperX + 17, upperY + 32)
+  love.graphics.print(tostring(self.model:getAICardsNum(AIID.UPPER)), upperX + 17, upperY + 32)
 
   -- Left cards
   love.graphics.rectangle('line', leftX, leftY, cardWidth, cardHeight)
-  love.graphics.print(tostring(self.upperCardsNum), leftX + 17, leftY + 32)
+  love.graphics.print(tostring(self.model:getAICardsNum(AIID.LEFT)), leftX + 17, leftY + 32)
 
   -- Right cards
   love.graphics.rectangle('line', rightX, rightY, cardWidth, cardHeight)
-  love.graphics.print(tostring(self.upperCardsNum), rightX + 17, rightY + 32)
+  love.graphics.print(tostring(self.model:getAICardsNum(AIID.RIGHT)), rightX + 17, rightY + 32)
   
 end
 
