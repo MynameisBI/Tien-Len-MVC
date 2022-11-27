@@ -4,7 +4,7 @@ local Suit = require 'libs.suit'
 local View = {}
 
 
-local cardWidth, cardHeight = 50, 80
+local cardWidth, cardHeight = 55, 80
 local cardSpaceRatio = -0.35
 
 local upperX, upperY = love.graphics.getWidth()/2 - cardWidth/2, 40
@@ -61,7 +61,6 @@ function View:draw()
   -- Right cards
   love.graphics.rectangle('line', rightX, rightY, cardWidth, cardHeight)
   love.graphics.print(tostring(self.model:getAICardsNum(AIID.RIGHT)), rightX + 17, rightY + 32)
-  
 end
 
 
