@@ -18,8 +18,10 @@ function Model:init()
     local player = Player()
     table.insert(self.players, player)
   end
+  self.players[1].isAI = false
   self.currentPlayerIndex = 1
   self.currentCombination = nil
+  self.isFirstTurn = true
 end
 
 
@@ -46,14 +48,58 @@ function Model:startGame()
     end
   end
 
-  -- Can combine this with the upper loop
-  -- But kept for readability
+    -- Can combine this with the upper loop
+    -- But kept for readability
   for deck = 1, 4 do 
     for i = 1, 13 do
       local cardIndex = splitedcardIndexes[deck][i]
       self.players[deck]:addCard(self.deck[cardIndex])
     end
   end
+
+
+  -- Find player with 3 of spades
+  local firstPlayerIndex
+  for playerIndex = 1, 4 do 
+    for i = 1, 13 do
+      local card = self.players[playerIndex].cards[i]
+      if card.rank == Rank.THREE and card.suit == Suit.SPADES then
+        firstPlayerIndex = playerIndex
+        goto done
+      end
+    end
+  end
+  ::done::
+
+  -- Set all player except LP to 'skipped'
+  for playerIndex = 1, 4 do
+    if playerIndex ~= firstPlayerIndex then
+      self.players[playerIndex].skipped = true
+    end
+  end
+
+  -- Set current player as LP
+  self.currentPlayerIndex = firstPlayerIndex
+
+
+  self.isFirstTurn = true
+
+  self:nextPlayer()
+end
+
+
+function Model:nextPlayer()
+  self.players[self.currentPlayerIndex]:onTurn(self.currentCombination)
+end
+
+
+function Model:onPlayerTurnEnd()
+  self.currentPlayerIndex = self.currentPlayerIndex + 1
+  if self.currentPlayerIndex > 4 then
+    self.currentPlayerIndex = 1
+  end
+
+  self:nextPlayer()
 end
 
 
