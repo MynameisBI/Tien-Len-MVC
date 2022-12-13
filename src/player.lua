@@ -19,6 +19,11 @@ function Player:addCard(card)
 end
 
 
+function Player:arrange()
+  table.sort(self.cards)
+end
+
+
 function Player:onTurn(currentCombination)
   if self.isAI then
     self:playCards()
