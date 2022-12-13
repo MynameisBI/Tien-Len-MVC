@@ -1,3 +1,6 @@
+local Card = require 'src.card'
+local Combination = require 'src.combination'
+
 local Player = Class('Player')
 
 
@@ -25,20 +28,45 @@ end
 
 
 function Player:onTurn(currentCombination)
+  local cards = {Card(Rank.THREE, Suit.SPADES)}
+  currentCombination = Combination(cards, CombinationType.SINGLE)
+
   if self.isAI then
-    self:playCards()
-    Model:onPlayerTurnEnd()
+    if currentCombination.type == CombinationType.SINGLE then
+      local card
+      for i = 1, #self.cards do
+        if self.cards[i] > currentCombination.cards then
+          card = self.cards[i]
+          break
+        end
+      end
+      
+      if card ~= nil then
+        self.playCards(card)
+      else
+        self:skip()
+      end
+  
+
+    elseif currentCombination.type == CombinationType.PAIR then
+      local card1, card2
+    
+
+    elseif currentCombination.type == CombinationType.TRIPLET then
+    
+
+    elseif currentCombination.type == CombinationType.QUARTET then
+    
+
+    elseif currentCombination.type == CombinationType.SEQUENCE then
+    
+
+    elseif currentCombination.type == CombinationType.DOUBLE_SEQUENCE then
+    end
   end
 end
 
-function Player:getBestCombination(combinationType)
-  if self.isAI then
-    self.cards = {}
-    if self.currentCombination == true then
-      self:playCards()
-      Model:onPlayerTurnEnd()
-    end
-  end 
+function Player:getBestCombination(combination)
 
 end
 
@@ -48,10 +76,10 @@ function Player:playCards()
 end
 
 
-function Player:skipCards()
+function Player:skip()
   if self.isAI then
     self.cards = {}
-    if self.currentCombination == true then
+    if self.currentCombination == nil then
       self.skipped = true
       Model:onPlayerTurnEnd()
     end
