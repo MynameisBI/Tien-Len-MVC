@@ -26,8 +26,14 @@ function Player:onTurn(currentCombination)
   end
 end
 
-
 function Player:getBestCombination(combinationType)
+  if self.isAI then
+    self.cards = {}
+    if self.currentCombination == true then
+      self:playCards()
+      Model:onPlayerTurnEnd()
+    end
+  end 
 
 end
 
@@ -38,7 +44,13 @@ end
 
 
 function Player:skipCards()
-
+  if self.isAI then
+    self.cards = {}
+    if self.currentCombination == true then
+      self.skipped = true
+      Model:onPlayerTurnEnd()
+    end
+  end
 end
 
 
