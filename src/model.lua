@@ -50,11 +50,17 @@ function Model:startGame()
 
     -- Can combine this with the upper loop
     -- But kept for readability
-  for deck = 1, 4 do 
+  for deck = 1, 4 do
     for i = 1, 13 do
       local cardIndex = splitedcardIndexes[deck][i]
       self.players[deck]:addCard(self.deck[cardIndex])
     end
+  end
+
+
+  -- Arrange all deck
+  for i = 1, 4 do
+    self.players[i]:arrange()
   end
 
 
