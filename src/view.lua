@@ -12,6 +12,9 @@ local leftX, leftY = 75, love.graphics.getHeight()/2 - cardHeight/2
 local rightX, rightY = 675, love.graphics.getHeight()/2 - cardHeight/2
 local lowerX, lowerY =  love.graphics.getWidth()/2 - 125, 460
 
+local images = {}
+for 
+
 
 function View:init(model, controller)
   self.model = model
