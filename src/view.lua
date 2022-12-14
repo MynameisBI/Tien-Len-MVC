@@ -13,7 +13,7 @@ local rightX, rightY = 675, love.graphics.getHeight()/2 - cardHeight/2
 local lowerX, lowerY =  love.graphics.getWidth()/2 - 125, 460
 
 local images = {}
-for 
+-- for 
 
 
 function View:init(model, controller)
@@ -51,6 +51,17 @@ end
 
 function View:draw()
   self.suit:draw()
+
+  local humanCards = self.model:getHumanCards()
+  for i = 1, #humanCards do
+    local x = lowerX + (-#humanCards/2 + i) * cardWidth + (-(#humanCards+1)/2 + i) * cardWidth * cardSpaceRatio
+    local y = humanCards[i].selected and lowerY - 25 or lowerY
+
+    local image = Sprites[humanCards[i].suit][humanCards[i].rank]
+    local sizeX = cardWidth / image:getWidth()
+    local sizeY = cardHeight / image:getHeight()
+    love.graphics.draw(image, x, y, 0, sizeX, sizeY)
+  end
 
   -- Upper cards
   -- love.graphics.setColor(1, 1, 1)
