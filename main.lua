@@ -1,4 +1,5 @@
 require 'globals'
+require 'assets'
 
 Model = require 'src.model'
 View = require 'src.view'

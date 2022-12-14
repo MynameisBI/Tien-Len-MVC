@@ -35,7 +35,7 @@ function Player:onTurn(currentCombination)
     if currentCombination.type == CombinationType.SINGLE then
       local card
       for i = 1, #self.cards do
-        if self.cards[i] > currentCombination.cards then
+        if self.cards[i] > currentCombination.cards[1] then
           card = self.cards[i]
           break
         end
