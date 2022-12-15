@@ -1,5 +1,6 @@
 Class = require 'libs.middleclass'
 
+DEBUG = true
 
 -- Enums
 CombinationType = {

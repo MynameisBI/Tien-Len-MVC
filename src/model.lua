@@ -1,5 +1,7 @@
 local Player = require 'src.player'
 local Card = require 'src.card'
+local Combination = require 'src.combination'
+
 
 local Model = {}
 
@@ -86,7 +88,18 @@ function Model:startGame()
 
   -- Set current player as LP
   self.currentPlayerIndex = firstPlayerIndex
+  if DEBUG then
+    self.currentPlayerIndex = 1
 
+    self.players[1].cards[1] = Card(Rank.THREE, Suit.SPADES)
+    self.players[1].cards[2] = Card(Rank.THREE, Suit.CLUBS)
+    self.players[1].cards[3] = Card(Rank.FOUR, Suit.SPADES)
+    self.players[1].cards[4] = Card(Rank.FOUR, Suit.CLUBS)
+    self.players[1].cards[5] = Card(Rank.FIVE, Suit.SPADES)
+    self.players[1].cards[6] = Card(Rank.FIVE, Suit.CLUBS)
+    self.players[1].cards[7] = Card(Rank.SIX, Suit.DIAMONDS)
+    self.players[1].cards[8] = Card(Rank.SIX, Suit.HEARTS)
+  end
 
   self.isFirstTurn = true
 
@@ -99,7 +112,99 @@ function Model:nextPlayer()
 end
 
 
-function Model:onPlayerTurnEnd()
+function Model:skip()
+  print('skip')
+end
+
+
+function Model:playSelectedCards()
+  local cards = self:getSeletedCards()
+  local combinationType = self:getCombinationTypeFromCards(cards)
+
+  if combinationType ~= nil then
+    self.currentCombination = Combination(cards, combinationType)
+
+    -- remove selected cards from player
+    local i = 1
+    while (i <= #self.players[1].cards) do
+      if self.players[1].cards[i].selected then
+        table.remove(self.players[1].cards, i)
+      else
+        i = i + 1
+      end
+    end
+  end
+
+  self:endCurrentTurn()
+end
+
+
+function Model:getSeletedCards()
+  local selectedCards = {}
+  for i = 1, #self.players[1].cards do
+    if self.players[1].cards[i].selected then
+      table.insert(selectedCards, self.players[1].cards[i])
+    end
+  end
+  return selectedCards
+end
+
+
+function Model:getCombinationTypeFromCards(cards)
+  if #cards == 1 then
+    return CombinationType.SINGLE
+
+  elseif #cards == 2 then
+    if cards[1].rank == cards[2].rank then
+      return CombinationType.PAIR
+    end
+
+  elseif #cards == 3 then
+    if cards[1].rank == cards[2].rank and cards[1].rank == cards[3].rank then
+      return CombinationType.TRIPLET
+    end
+
+  elseif #cards == 4 then
+    if cards[1].rank == cards[2].rank and cards[1].rank == cards[3].rank and cards[1].rank == cards[4].rank then
+      return CombinationType.QUARTET
+    end
+  end
+
+  if #cards >= 3 then
+    local isSequence = true
+    if cards[#cards].rank == Rank.TWO then isSequence = false end
+    for i = 2, #cards do
+      if cards[i].rank - cards[i-1].rank ~= 1 then
+        isSequence = false
+        break
+      end
+    end
+    if isSequence then return CombinationType.SEQUENCE end
+  end
+
+  if #cards >= 6 and #cards % 2 == 0 then
+    local isDouble, isSequence = true, true
+    -- check DOUBLE
+    for i = 1, #cards/2 do
+      if cards[i*2].rank ~= cards[i*2-1].rank then
+        isDouble = false
+      end
+    end
+    -- check SEQUENCE
+    for i = 2, #cards/2 do
+      if cards[i*2].rank - cards[(i-1)*2].rank ~= 1 then
+        isSequence = false
+      end
+    end
+    if isDouble and isSequence then return CombinationType.DOUBLE_SEQUENCE end
+
+  end
+
+  return nil
+end
+
+
+function Model:endCurrentTurn()
   self.currentPlayerIndex = self.currentPlayerIndex + 1
   if self.currentPlayerIndex > 4 then
     self.currentPlayerIndex = 1

@@ -14,13 +14,13 @@ function Controller:onCardSelected(cardIndex)
 end
 
 
-function Controller:humanSkipped()
-
+function Controller:skip()
+  self.model:skip()
 end
 
 
-function Controller:humanPlayed(combination)
-
+function Controller:playSelectedCards()
+  self.model:playSelectedCards()
 end
 
 

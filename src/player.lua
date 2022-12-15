@@ -32,37 +32,40 @@ function Player:onTurn(currentCombination)
   currentCombination = Combination(cards, CombinationType.SINGLE)
 
   if self.isAI then
-    if currentCombination.type == CombinationType.SINGLE then
-      local card
-      for i = 1, #self.cards do
-        if self.cards[i] > currentCombination.cards[1] then
-          card = self.cards[i]
-          break
-        end
-      end
+    print("It's my turn, the AI ^w^")
+    Model:endCurrentTurn()
+
+    -- if currentCombination.type == CombinationType.SINGLE then
+    --   local card
+    --   for i = 1, #self.cards do
+    --     if self.cards[i] > currentCombination.cards[1] then
+    --       card = self.cards[i]
+    --       break
+    --     end
+    --   end
       
-      if card ~= nil then
-        self.playCards(card)
-      else
-        self:skip()
-      end
+    --   if card ~= nil then
+    --     self.playCards(card)
+    --   else
+    --     self:skip()
+    --   end
   
 
-    elseif currentCombination.type == CombinationType.PAIR then
-      local card1, card2
+    -- elseif currentCombination.type == CombinationType.PAIR then
+    --   local card1, card2
     
 
-    elseif currentCombination.type == CombinationType.TRIPLET then
+    -- elseif currentCombination.type == CombinationType.TRIPLET then
     
 
-    elseif currentCombination.type == CombinationType.QUARTET then
+    -- elseif currentCombination.type == CombinationType.QUARTET then
     
 
-    elseif currentCombination.type == CombinationType.SEQUENCE then
+    -- elseif currentCombination.type == CombinationType.SEQUENCE then
     
 
-    elseif currentCombination.type == CombinationType.DOUBLE_SEQUENCE then
-    end
+    -- elseif currentCombination.type == CombinationType.DOUBLE_SEQUENCE then
+    -- end
   end
 end
 
@@ -81,7 +84,7 @@ function Player:skip()
     self.cards = {}
     if self.currentCombination == nil then
       self.skipped = true
-      Model:onPlayerTurnEnd()
+      Model:endCurrentTurn()
     end
   end
 end

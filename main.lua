@@ -17,6 +17,7 @@ Controller = require 'src.controller'
 
 function love.load()
   math.randomseed(os.time())
+  -- math.randomseed(69)
 
   Model:init()
   View:init(Model, Controller)
@@ -27,10 +28,14 @@ end
 
 
 function love.update(dt)
-    View:update(dt)
+  View:update(dt)
 end
 
 
 function love.draw()
-    View:draw()
+  View:draw()
+
+  if DEBUG then
+    love.graphics.print('DEBUG = True')
+  end
 end

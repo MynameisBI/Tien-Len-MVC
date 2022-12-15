@@ -12,9 +12,6 @@ local leftX, leftY = 75, love.graphics.getHeight()/2 - cardHeight/2
 local rightX, rightY = 675, love.graphics.getHeight()/2 - cardHeight/2
 local lowerX, lowerY =  love.graphics.getWidth()/2 - 125, 460
 
-local images = {}
--- for 
-
 
 function View:init(model, controller)
   self.model = model
@@ -27,12 +24,12 @@ end
 function View:update(dt)
   -- Skip button
   if self.suit:Button('skip', 620, 510, 80, 40).hit then
-
+    self.controller:skip()
   end
 
   -- Play button
   if self.suit:Button('play', 620, 450, 80, 40).hit then
-
+    self.controller:playSelectedCards()
   end
 
   -- Lower cards
@@ -65,7 +62,7 @@ function View:draw()
 
   -- Upper cards
   -- love.graphics.setColor(1, 1, 1)
-  love.graphics.rectangle('line', upperX, upperY, cardWidth, cardHeight)
+  -- love.graphics.rectangle('line', upperX, upperY, cardWidth, cardHeight)
   love.graphics.print(tostring(self.model:getAICardsNum(AIID.UPPER)), upperX + 17, upperY + 32)
 
   -- Left cards
