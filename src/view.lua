@@ -11,6 +11,7 @@ local upperX, upperY = love.graphics.getWidth()/2 - cardWidth/2, 40
 local leftX, leftY = 75, love.graphics.getHeight()/2 - cardHeight/2
 local rightX, rightY = 675, love.graphics.getHeight()/2 - cardHeight/2
 local lowerX, lowerY =  love.graphics.getWidth()/2 - 125, 460
+local currentCombinationX, currentCombinationY = love.graphics.getWidth()/2 - cardWidth/2, love.graphics.getHeight()/2 - cardHeight/2
 
 
 function View:init(model, controller)
@@ -72,6 +73,21 @@ function View:draw()
   -- Right cards
   love.graphics.rectangle('line', rightX, rightY, cardWidth, cardHeight)
   love.graphics.print(tostring(self.model:getAICardsNum(AIID.RIGHT)), rightX + 17, rightY + 32)
+
+  -- Current Combination
+  local currentCombination = self.model:getCurrentCombination()
+  if currentCombination ~= nil then
+    local cards = currentCombination.cards
+    for i = 1, #cards do
+      local x = currentCombinationX + (-#cards/2 + i) * cardWidth + (-(#cards+1)/2 + i) * cardWidth * cardSpaceRatio
+      local y = currentCombinationY
+      
+      local image = Sprites[cards[i].suit][cards[i].rank]
+      local sizeX = cardWidth / image:getWidth()
+      local sizeY = cardHeight / image:getHeight()
+      love.graphics.draw(image, x, y, 0, sizeX, sizeY)
+    end
+  end
 end
 
 
