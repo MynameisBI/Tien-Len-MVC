@@ -11,7 +11,14 @@ local upperX, upperY = love.graphics.getWidth()/2 - cardWidth/2, 40
 local leftX, leftY = 75, love.graphics.getHeight()/2 - cardHeight/2
 local rightX, rightY = 675, love.graphics.getHeight()/2 - cardHeight/2
 local lowerX, lowerY =  love.graphics.getWidth()/2 - 125, 460
-local currentCombinationX, currentCombinationY = love.graphics.getWidth()/2 - cardWidth/2, love.graphics.getHeight()/2 - cardHeight/2
+
+local centerX, centerY = love.graphics.getWidth()/2 - cardWidth/2, love.graphics.getHeight()/2 - cardHeight/2
+local tweenStartPos = {
+  {x = centerX      , y = centerY + 200},
+  {x = centerX + 200, y = centerY},
+  {x = centerX      , y = centerY - 200},
+  {x = centerX - 200, y = centerY}
+}
 
 
 function View:init(model, controller)
@@ -19,6 +26,9 @@ function View:init(model, controller)
   self.controller = controller
   
   self.suit = Suit.new()
+  self.timer = Timer.new()
+
+  self.currentCombinationX, self.currentCombinationY = centerX, centerY
 end
 
 
@@ -44,6 +54,8 @@ function View:update(dt)
       self.controller:onCardSelected(i)
     end
   end
+
+  self.timer:update(dt)
 end
 
 
@@ -79,8 +91,8 @@ function View:draw()
   if currentCombination ~= nil then
     local cards = currentCombination.cards
     for i = 1, #cards do
-      local x = currentCombinationX + (-#cards/2 + i) * cardWidth + (-(#cards+1)/2 + i) * cardWidth * cardSpaceRatio
-      local y = currentCombinationY
+      local x = self.currentCombinationX + (-#cards/2 + i) * cardWidth + (-(#cards+1)/2 + i) * cardWidth * cardSpaceRatio
+      local y = self.currentCombinationY
       
       local image = Sprites[cards[i].suit][cards[i].rank]
       local sizeX = cardWidth / image:getWidth()
@@ -88,6 +100,12 @@ function View:draw()
       love.graphics.draw(image, x, y, 0, sizeX, sizeY)
     end
   end
+end
+
+
+function View:onPlayerPlay(playerIndex)
+  self.currentCombinationX, self.currentCombinationY = tweenStartPos[playerIndex].x, tweenStartPos[playerIndex].y
+  self.timer:tween(0.25, self, {currentCombinationX = centerX, currentCombinationY = centerY}, 'linear')
 end
 
 

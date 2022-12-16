@@ -32,9 +32,10 @@ function Player:onTurn(currentCombination)
   -- currentCombination = Combination(cards, CombinationType.SINGLE)
 
   if self.isAI then
-    print("It's my turn, the AI ^w^")
+    if currentCombination == nil and #self.cards >= 1 then
+      
 
-    if currentCombination.type == CombinationType.SINGLE and #self.cards >= 1 then
+    elseif currentCombination.type == CombinationType.SINGLE and #self.cards >= 1 then
       local card
       for i = 1, #self.cards do
         if self.cards[i] > currentCombination.cards[1] then
@@ -115,11 +116,52 @@ function Player:onTurn(currentCombination)
       end
 
     elseif currentCombination.type == CombinationType.SEQUENCE then
-      -- for i = 1, self.cards-#currentCombination.cards do
-      --   for j
-      -- end
+      local cards
+      for i = 1, #self.cards - #currentCombination.cards do
+        local comb = {self.cards[i]}
+        for j = i+1, #self.cards - #currentCombination.cards + #comb do
+          if self.cards[j].rank ~= 13 and self.cards[j].rank - comb[#comb].rank == 1 then
+            table.insert(comb, self.cards[j])
+            if #comb == #currentCombination.cards then
+              if comb[#comb] > currentCombination.cards[#currentCombination.cards] then
+                cards = comb
+                goto break2
+              end
+            end
+          end
+        end
+      end
+      ::break2::
+
+      if cards ~= nil then
+        self:playCards(cards, CombinationType.SEQUENCE)
+      else
+        self:skip()
+      end
 
     elseif currentCombination.type == CombinationType.DOUBLE_SEQUENCE then
+      local cards
+      for i = 1, #self.cards - #currentCombination.cards do
+        local comb = {self.cards[i]}
+        for j = i+1, #self.cards - #currentCombination.cards + #comb do
+          if self.cards[j].rank ~= 13 and self.cards[j].rank - comb[#comb].rank == 1 then
+            table.insert(comb, self.cards[j])
+            if #comb == #currentCombination.cards then
+              if comb[#comb] > currentCombination.cards[#currentCombination.cards] then
+                cards = comb
+                goto break2
+              end
+            end
+          end
+        end
+      end
+      ::break2::
+
+      if cards ~= nil then
+        self:playCards(cards, CombinationType.SEQUENCE)
+      else
+        self:skip()
+      end
     end
   end
 end

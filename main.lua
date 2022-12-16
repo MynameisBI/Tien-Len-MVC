@@ -19,7 +19,7 @@ function love.load()
   math.randomseed(os.time())
   -- math.randomseed(69)
 
-  Model:init()
+  Model:init(View)
   View:init(Model, Controller)
   Controller:init(Model, View)
 
@@ -28,6 +28,7 @@ end
 
 
 function love.update(dt)
+  Model:update(dt)
   View:update(dt)
 end
 

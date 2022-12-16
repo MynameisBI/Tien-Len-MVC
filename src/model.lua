@@ -6,7 +6,9 @@ local Combination = require 'src.combination'
 local Model = {}
 
 
-function Model:init()
+function Model:init(view)
+  self.view = view
+
   self.deck = {}
   for suit, sValue in pairs(Suit) do
     for rank, rValue in pairs(Rank) do
@@ -24,6 +26,13 @@ function Model:init()
   self.currentPlayerIndex = 1
   self.currentCombination = nil
   self.isFirstTurn = true
+
+  self.timer = Timer.new()
+end
+
+
+function Model:update(dt)
+  if self.timer then self.timer:update(dt) end
 end
 
 
@@ -108,7 +117,9 @@ end
 
 
 function Model:nextPlayer()
-  self.players[self.currentPlayerIndex]:onTurn(self.currentCombination)
+  self.timer:after(1, function()
+    self.players[self.currentPlayerIndex]:onTurn(self.currentCombination)
+  end)
 end
 
 
@@ -241,6 +252,11 @@ end
 
 
 function Model:playCombination(combination)
+  local s = ''
+  for i = 1, #combination.cards do
+    s = s..string.format('%d-%d ', combination.cards[i].rank, combination.cards[i].suit)
+  end
+  print("I play "..s..'^w^')
   if self:getCombinationTypeFromCards(combination.cards) ~= nil then
     self:setCurrentCombination(combination)
   end
@@ -254,6 +270,7 @@ function Model:setCurrentCombination(combination)
     end
   end
   self.currentCombination = combination
+  self.view:onPlayerPlay(self.currentPlayerIndex)
 end
 
 

@@ -24,14 +24,4 @@ function Controller:playSelectedCards()
 end
 
 
-function Controller:AISkipped()
-
-end
-
-
-function Controller:AIPlayed(combination)
-
-end
-
-
 return Controller
