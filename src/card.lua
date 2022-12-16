@@ -23,5 +23,25 @@ function Card:__lt(other)
   end
 end
 
+function Card:__le(other)
+  if self.rank < other.rank then
+    return true
+  elseif self.rank > other.rank then
+    return false
+  else
+    if self.suit <= other.suit then
+      return true
+    else
+      return false
+    end
+  end
+end
+
+function Card:__eq(other)
+  if self.rank == other.rank and self.suit == other.suit then
+    return true
+  end
+  return false
+end
 
 return Card

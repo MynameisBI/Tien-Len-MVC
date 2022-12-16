@@ -113,7 +113,8 @@ end
 
 
 function Model:skip()
-  print('skip')
+  self.players[1].skipped = true
+  self:endCurrentTurn()
 end
 
 
@@ -121,21 +122,23 @@ function Model:playSelectedCards()
   local cards = self:getSeletedCards()
   local combinationType = self:getCombinationTypeFromCards(cards)
 
-  if combinationType ~= nil then
-    self.currentCombination = Combination(cards, combinationType)
+  if (self.currentCombination == nil and combinationType ~= nil) or combinationType == self.currentCombination.type then
+    if self.currentCombination == nil or (cards[#cards] > self.currentCombination.cards[#self.currentCombination.cards]) then
+      self:setCurrentCombination(Combination(cards, combinationType))
 
-    -- remove selected cards from player
-    local i = 1
-    while (i <= #self.players[1].cards) do
-      if self.players[1].cards[i].selected then
-        table.remove(self.players[1].cards, i)
-      else
-        i = i + 1
+      -- remove selected cards from player
+      local i = 1
+      while (i <= #self.players[1].cards) do
+        if self.players[1].cards[i].selected then
+          table.remove(self.players[1].cards, i)
+        else
+          i = i + 1
+        end
       end
+
+      self:endCurrentTurn()
     end
   end
-
-  self:endCurrentTurn()
 end
 
 
@@ -210,7 +213,47 @@ function Model:endCurrentTurn()
     self.currentPlayerIndex = 1
   end
 
+  ---- This part can be written as a boolean expression
+  -- local allSkippedExceptCurrentPlayer = true
+  -- for i = 1, 4 do
+  --   if i ~= self.currentPlayerIndex then
+  --     if self.players[i].skipped == false then
+  --       allSkippedExceptCurrentPlayer = false
+  --       break
+  --     end
+  --   end
+  -- end
+  ---- !!
+  ---- Oh here it is
+  local players = self.players
+  local allSkippedExceptCurrentPlayer =
+      (players[1].skipped or self.currentPlayerIndex == 1) and
+      (players[2].skipped or self.currentPlayerIndex == 2) and
+      (players[3].skipped or self.currentPlayerIndex == 3) and
+      (players[4].skipped or self.currentPlayerIndex == 4)
+  ---- !!
+  if allSkippedExceptCurrentPlayer then
+    self:setCurrentCombination(nil)
+  end
+
   self:nextPlayer()
+end
+
+
+function Model:playCombination(combination)
+  if self:getCombinationTypeFromCards(combination.cards) ~= nil then
+    self:setCurrentCombination(combination)
+  end
+end
+
+
+function Model:setCurrentCombination(combination)
+  if self.currentCombination == nil then
+    for i = 1, 4 do
+      self.players[i].skipped = false
+    end
+  end
+  self.currentCombination = combination
 end
 
 
