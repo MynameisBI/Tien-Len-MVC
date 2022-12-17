@@ -206,6 +206,9 @@ function Player:onTurn(currentCombination)
       else
         self:skip()
       end
+
+    else
+      self:skip()
     end
   end
 end
