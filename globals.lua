@@ -1,7 +1,7 @@
 Class = require 'libs.middleclass'
 Timer = require 'libs.timer'
 
-DEBUG = true
+DEBUG = false
 
 -- Enums
 CombinationType = {
