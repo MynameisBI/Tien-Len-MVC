@@ -27,6 +27,7 @@ function View:init(model, controller)
   
   self.suit = Suit.new()
   self.timer = Timer.new()
+  self.currentCombinationHandle = nil
 
   self.currentCombinationX, self.currentCombinationY = centerX, centerY
 end
@@ -60,6 +61,7 @@ end
 
 
 function View:draw()
+  love.graphics.setColor(1, 1, 1)
   self.suit:draw()
 
   local humanCards = self.model:getHumanCards()
@@ -74,19 +76,37 @@ function View:draw()
   end
 
   -- Upper cards
-  -- love.graphics.setColor(1, 1, 1)
-  -- love.graphics.rectangle('line', upperX, upperY, cardWidth, cardHeight)
+  love.graphics.setColor(1, 1, 1)
   love.graphics.print(tostring(self.model:getAICardsNum(AIID.UPPER)), upperX + 17, upperY + 32)
 
+  if self.model.currentPlayerIndex == 3 then love.graphics.setColor(0.4, 1, 0.4)
+  else love.graphics.setColor(1, 0.4, 0.4)
+  end
+  love.graphics.circle('fill', upperX, upperY - 20, 16)
+
+
   -- Left cards
+  love.graphics.setColor(1, 1, 1)
   love.graphics.rectangle('line', leftX, leftY, cardWidth, cardHeight)
   love.graphics.print(tostring(self.model:getAICardsNum(AIID.LEFT)), leftX + 17, leftY + 32)
 
+  if self.model.currentPlayerIndex == 4 then love.graphics.setColor(0.4, 1, 0.4)
+  else love.graphics.setColor(1, 0.4, 0.4)
+  end
+  love.graphics.circle('fill', leftX - 20, leftY, 16)
+
   -- Right cards
+  love.graphics.setColor(1, 1, 1)
   love.graphics.rectangle('line', rightX, rightY, cardWidth, cardHeight)
   love.graphics.print(tostring(self.model:getAICardsNum(AIID.RIGHT)), rightX + 17, rightY + 32)
 
+  if self.model.currentPlayerIndex == 2 then love.graphics.setColor(0.4, 1, 0.4)
+  else love.graphics.setColor(1, 0.4, 0.4)
+  end
+  love.graphics.circle('fill', rightX + 20, rightY, 16)
+
   -- Current Combination
+  love.graphics.setColor(1, 1, 1)
   local currentCombination = self.model:getCurrentCombination()
   if currentCombination ~= nil then
     local cards = currentCombination.cards
@@ -100,10 +120,21 @@ function View:draw()
       love.graphics.draw(image, x, y, 0, sizeX, sizeY)
     end
   end
+
+  if self.model.currentPlayerIndex == 1 then love.graphics.setColor(0.4, 1, 0.4)
+  else love.graphics.setColor(1, 0.4, 0.4)
+  end
+  love.graphics.circle('fill', lowerX, lowerY + 106, 16)
+
+  love.graphics.setColor(1, 1, 1)
 end
 
 
 function View:onPlayerPlay(playerIndex)
+  if self.currentCombinationHandle then
+    self.timer:cancel(self.currentCombinationHandle)
+  end
+
   self.currentCombinationX, self.currentCombinationY = tweenStartPos[playerIndex].x, tweenStartPos[playerIndex].y
   self.timer:tween(0.25, self, {currentCombinationX = centerX, currentCombinationY = centerY}, 'linear')
 end

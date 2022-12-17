@@ -33,6 +33,50 @@ function Player:onTurn(currentCombination)
 
   if self.isAI then
     if currentCombination == nil and #self.cards >= 1 then
+      -- Check sequence
+      local sequence = {self.cards[1]}
+      for j = 2, #self.cards do
+        if self.cards[j].rank - sequence[#sequence].rank == 1 then
+          table.insert(sequence, self.cards[j])
+        elseif self.cards[j].rank - sequence[#sequence].rank >= 2 then
+          break
+        end
+      end
+      if #sequence >= 3 then
+        self:playCards(sequence, CombinationType.SEQUENCE)
+        return
+      end
+
+      -- Check quartet
+      if #self.cards >= 4 then
+        if self.cards[1].rank == self.cards[2].rank and self.cards[1].rank == self.cards[3].rank and
+            self.cards[1].rank == self.cards[4] then
+          local quartet = {self.cards[1], self.cards[2], self.cards[3], self.cards[4]}
+          self:playCards(quartet, CombinationType.QUARTET)
+          return
+        end
+      end
+
+      -- Check triplet
+      if #self.cards >= 3 then
+        if self.cards[1].rank == self.cards[2].rank and self.cards[1].rank == self.cards[3].rank then
+          local triplet = {self.cards[1], self.cards[2], self.cards[3]}
+          self:playCards(triplet, CombinationType.TRIPLET)
+          return
+        end
+      end
+
+      -- Check pair
+      if #self.cards >= 2 then
+        if self.cards[1].rank == self.cards[2].rank then
+          local pair = {self.cards[1], self.cards[2]}
+          self:playCards(pair, CombinationType.PAIR)
+          return
+        end
+      end
+
+      -- Check single
+      self:playCards({self.cards[1]}, CombinationType.SINGLE)
       
 
     elseif currentCombination.type == CombinationType.SINGLE and #self.cards >= 1 then

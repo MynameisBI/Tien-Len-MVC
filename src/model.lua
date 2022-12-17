@@ -27,6 +27,8 @@ function Model:init(view)
   self.currentCombination = nil
   self.isFirstTurn = true
 
+  self.winners = {}
+
   self.timer = Timer.new()
 end
 
@@ -97,6 +99,9 @@ function Model:startGame()
 
   -- Set current player as LP
   self.currentPlayerIndex = firstPlayerIndex
+
+  self.isFirstTurn = true
+
   if DEBUG then
     self.currentPlayerIndex = 1
 
@@ -109,8 +114,6 @@ function Model:startGame()
     self.players[1].cards[7] = Card(Rank.SIX, Suit.DIAMONDS)
     self.players[1].cards[8] = Card(Rank.SIX, Suit.HEARTS)
   end
-
-  self.isFirstTurn = true
 
   self:nextPlayer()
 end
@@ -133,22 +136,33 @@ function Model:playSelectedCards()
   local cards = self:getSeletedCards()
   local combinationType = self:getCombinationTypeFromCards(cards)
 
-  if (self.currentCombination == nil and combinationType ~= nil) or combinationType == self.currentCombination.type then
-    if self.currentCombination == nil or (cards[#cards] > self.currentCombination.cards[#self.currentCombination.cards]) then
-      self:setCurrentCombination(Combination(cards, combinationType))
+  if combinationType == nil then
+    print('Invalid combination')
+    return
+  end
 
-      -- remove selected cards from player
-      local i = 1
-      while (i <= #self.players[1].cards) do
-        if self.players[1].cards[i].selected then
-          table.remove(self.players[1].cards, i)
-        else
-          i = i + 1
-        end
+  local currentComb = self.currentCombination
+  if (currentComb == nil and combinationType ~= nil) or -- new comb type
+      (combinationType == currentComb.type and -- new comb > old comb
+      cards[#cards] > self.currentCombination.cards[#self.currentCombination.cards]) or 
+      ((currentComb.type == CombinationType.SINGLE and currentComb.cards[1].rank == Rank.TWO) and -- bombing single 2
+      (combinationType == CombinationType.DOUBLE_SEQUENCE or combinationType == CombinationType.QUARTET)) or 
+      ((currentComb.type == CombinationType.PAIR and currentComb.cards[1].rank == Rank.TWO) and -- bombing pair of 2
+      ((combinationType == CombinationType.DOUBLE_SEQUENCE and #cards >= 8) or combinationType == CombinationType.QUARTET)) then
+
+    self:setCurrentCombination(Combination(cards, combinationType))
+
+    -- remove selected cards from player
+    local i = 1
+    while (i <= #self.players[1].cards) do
+      if self.players[1].cards[i].selected then
+        table.remove(self.players[1].cards, i)
+      else
+        i = i + 1
       end
-
-      self:endCurrentTurn()
     end
+
+    self:endCurrentTurn()
   end
 end
 
@@ -219,35 +233,51 @@ end
 
 
 function Model:endCurrentTurn()
-  self.currentPlayerIndex = self.currentPlayerIndex + 1
-  if self.currentPlayerIndex > 4 then
-    self.currentPlayerIndex = 1
-  end
+  if #self.winners == 3 then
+    table.insert(self.winners, self.currentPlayerIndex)
 
-  ---- This part can be written as a boolean expression
-  -- local allSkippedExceptCurrentPlayer = true
-  -- for i = 1, 4 do
-  --   if i ~= self.currentPlayerIndex then
-  --     if self.players[i].skipped == false then
-  --       allSkippedExceptCurrentPlayer = false
-  --       break
-  --     end
-  --   end
-  -- end
-  ---- !!
-  ---- Oh here it is
-  local players = self.players
-  local allSkippedExceptCurrentPlayer =
-      (players[1].skipped or self.currentPlayerIndex == 1) and
-      (players[2].skipped or self.currentPlayerIndex == 2) and
-      (players[3].skipped or self.currentPlayerIndex == 3) and
-      (players[4].skipped or self.currentPlayerIndex == 4)
-  ---- !!
-  if allSkippedExceptCurrentPlayer then
-    self:setCurrentCombination(nil)
-  end
+    print('1st player: Player '..tostring(self.winners[1]))
+    print('2nd player: Player '..tostring(self.winners[2]))
+    print('3rd player: Player '..tostring(self.winners[3]))
+    print('4rd player: Player '..tostring(self.winners[4]))
 
-  self:nextPlayer()
+  else
+    if #self.players[self.currentPlayerIndex].cards == 0 then
+      table.insert(self.winners, self.currentPlayerIndex)
+    end
+
+    repeat
+      self.currentPlayerIndex = self.currentPlayerIndex + 1
+      if self.currentPlayerIndex > 4 then
+        self.currentPlayerIndex = 1
+      end
+    until #self.players[self.currentPlayerIndex].cards >= 1
+
+    ---- This part can be written as a boolean expression
+    -- local allSkippedExceptCurrentPlayer = true
+    -- for i = 1, 4 do
+    --   if i ~= self.currentPlayerIndex then
+    --     if self.players[i].skipped == false then
+    --       allSkippedExceptCurrentPlayer = false
+    --       break
+    --     end
+    --   end
+    -- end
+    ---- !!
+    ---- Oh here it is
+    local players = self.players
+    local allSkippedExceptCurrentPlayer =
+        (players[1].skipped or self.currentPlayerIndex == 1 or #players[1].cards == 0) and
+        (players[2].skipped or self.currentPlayerIndex == 2 or #players[2].cards == 0) and
+        (players[3].skipped or self.currentPlayerIndex == 3 or #players[3].cards == 0) and
+        (players[4].skipped or self.currentPlayerIndex == 4 or #players[4].cards == 0)
+    ---- !!
+    if allSkippedExceptCurrentPlayer then
+      self:setCurrentCombination(nil)
+    end
+
+    self:nextPlayer()
+  end
 end
 
 
