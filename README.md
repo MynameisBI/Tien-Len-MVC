@@ -11,14 +11,14 @@
 <!-- ABOUT THE PROJECT -->
 <h2 id="about-the-project"> About The Project</h2>
 <p align="justify">
-  Tiến Lên is a popular card game in Vietnam. In Tiến Lên, people take turn to play different combinations of cards with certain rules that must be followed. The aim of the game is to play all of one's own cards before anyone else does.
+  Tiến Lên is a popular card game in Vietnam. In Tiến Lên, people take turn to play different combinations of cards with certain rules that must be followed when playing. The aim of the game is to play all of one's own cards before anyone else does.
 </p>
 
 
 <!-- OVERVIEW -->
 <h2 id="overview"> Overview</h2>
 <p align="justify">
-  In this project, we made a digital version of Tien Len using the Model-View-Controller as the main pattern. The game consists of a player with 3 other AI playing a game of Tiến Lên.
+  In this project, we made a digital version of Tien Len using the Model-View-Controller architecture as the base pattern. The game consists of a player with 3 other AIs playing a game of Tiến Lên.
 </p>
 
 
