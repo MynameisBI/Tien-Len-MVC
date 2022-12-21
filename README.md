@@ -36,8 +36,8 @@
 
 <h3>Helper files</h3>
 <ul>
-  <li><b>main.lua</b> - Initialize the game</li>
-  <li><b>conf.lua</b> - Software configuration</li>
-  <li><b>globals.lua</b> - Contains global variables and enums configuration</li>
-  <li><b>assets.lua</b> - Import all the assets configuration</li>
+  <li><b>main.lua</b> - Initialize the game.</li>
+  <li><b>conf.lua</b> - Software configuration.</li>
+  <li><b>globals.lua</b> - Contains global variables and enumerations.</li>
+  <li><b>assets.lua</b> - Import all the assets.</li>
 </ul>
